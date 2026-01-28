@@ -27,54 +27,18 @@
     
     mysqli_select_db($conn, $MYSQL_DATABASE);
 
-    $sql = "CREATE TABLE IF NOT EXISTS utenti (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        nome VARCHAR(50) NOT NULL,
-        cognome VARCHAR(50) NOT NULL,
-        pwd VARCHAR(255) NOT NULL,
-        data_registrazione TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )";
-    mysqli_query($conn, $sql);
-
-    $result = mysqli_query($conn, "SELECT COUNT(*) as total FROM utenti");
-    $row = mysqli_fetch_assoc($result);
-
-    if ($row['total'] == 0) {
-        //utenti di esempio
-        $utenti_esempio = [
-            ['Mario', 'Rossi', password_hash('password123', PASSWORD_DEFAULT)],
-            ['Laura', 'Bianchi', password_hash('laura2024', PASSWORD_DEFAULT)],
-            ['Giuseppe', 'Verdi', password_hash('giuseppe99', PASSWORD_DEFAULT)],
-            ['Anna', 'Neri', password_hash('anna456', PASSWORD_DEFAULT)],
-            ['Francesco', 'Romano', password_hash('franco789', PASSWORD_DEFAULT)]
-        ];
-        
-        foreach ($utenti_esempio as $utente) {
-            $nome = mysqli_real_escape_string($conn, $utente[0]);
-            $cognome = mysqli_real_escape_string($conn, $utente[1]);
-            $pwd = mysqli_real_escape_string($conn, $utente[2]);
-            
-            $sql = "INSERT INTO utenti (nome, cognome, pwd) VALUES ('$nome', '$cognome', '$pwd')";
-            mysqli_query($conn, $sql);
-        }
-    }
-
     if (isset($_POST['aggiungi_utente'])) {
         $nome = mysqli_real_escape_string($conn, $_POST['nome']);
         $cognome = mysqli_real_escape_string($conn, $_POST['cognome']);
-        $pwd_utente = mysqli_real_escape_string($conn, $_POST['pwd']);
         
-        if (!empty($nome) && !empty($cognome) && !empty($pwd_utente)) {
-            $pwd_hash = password_hash($pwd_utente, PASSWORD_DEFAULT);
-            $sql = "INSERT INTO utenti (nome, cognome, pwd) VALUES ('$nome', '$cognome', '$pwd_hash')";
+        if (!empty($nome) && !empty($cognome)) {
+            $sql = "INSERT INTO utenti (nome, cognome) VALUES ('$nome', '$cognome')";
             
             if (mysqli_query($conn, $sql)) {
                 $success = "Utente aggiunto con successo!";
             } else {
                 $error_insert = "Errore nell'inserimento: " . mysqli_error($conn);
             }
-        } else {
-            $error_insert = "Tutti i campi sono obbligatori!";
         }
     }
 ?>
@@ -86,6 +50,7 @@
     <title>dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../CSS/index.css">
 </head>
 <body>
     <div class="form-inserimento">
@@ -94,18 +59,13 @@
         <form method="POST" class="mb-4">
             <div class="form-row mb-3">
                 <div class="form-group">
-                    <label class="form-label" for="nome">Nome *</label>
+                    <label class="form-label" for="nome">Nome</label>
                     <input class="form-control" type="text" id="nome" name="nome" required>
                 </div>
                 
                 <div class="form-group">
-                    <label class="form-label" for="cognome">Cognome *</label>
+                    <label class="form-label" for="cognome">Cognome</label>
                     <input class="form-control" type="text" id="cognome" name="cognome" required>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label" for="pwd">Password *</label>
-                    <input class="form-control" type="password" id="pwd" name="pwd" required>
                 </div>
             </div>
             
@@ -160,6 +120,5 @@
 </body>
 </html>
 <?php
-// Chiudi la connessione
 mysqli_close($conn);
 ?>  
