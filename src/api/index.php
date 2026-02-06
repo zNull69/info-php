@@ -51,6 +51,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../CSS/index.css">
+    <script>
+        function showModifyForm(id) {
+            const form = document.getElementById(`modify-form-${id}`);
+            form.style.display = form.style.display === 'none' ? 'table-row' : 'none';
+        }
+    </script>
 </head>
 <body>
     <div class="form-inserimento">
@@ -102,6 +108,21 @@
                         <td><?= $utente['nome'] ?></td>
                         <td><?= $utente['cognome'] ?></td>
                         <td><?= $utente['data_registrazione'] ?></td>
+                        <td><button onclick="showModifyForm(<?= $utente['id'] ?>)">Modifica</button></td>
+                        <td><a href="elimina.php?id=<?= $utente['id'] ?>" class="btn btn-sm btn-danger">Elimina</a></td>
+                    </tr>
+                    <tr class="modify-form" id="modify-form-<?= $utente['id'] ?>" style="display: none;"">
+                        <td>
+                            <form action="modifica.php?id=<?= $utente['id'] ?>" method="POST">
+                                <div class="form-group">
+                                    <input type="text" name="nome" value="<?= $utente['nome'] ?>" required>
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" name="cognome" value="<?= $utente['cognome'] ?>" required>
+                                </div>
+                                <button type="submit" class="btn btn-sm btn-success">Salva Modifiche</button>
+                            </form>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             <?php else: ?>
@@ -113,10 +134,6 @@
             <?php endif; ?>
         </tbody>
     </table>
-    
-    <p style="margin-top: 20px; color: #666;">
-        Totale utenti registrati: <strong><?= count($utenti) ?></strong>
-    </p>
 </body>
 </html>
 <?php
